@@ -1,4 +1,3 @@
-import 'dart:ffi';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
@@ -14,115 +13,162 @@ class History extends StatefulWidget {
 }
 
 class _HistoryState extends State<History> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        backgroundColor: Colors.deepPurple[700],
+        appBar: AppBar(
+          title: Text('History'),
+          backgroundColor: Colors.deepPurple[900],
+          titleTextStyle: TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+          elevation: 0,
+        ),
+        body: GridView.count(
+          crossAxisCount: 1,
+          childAspectRatio: 8 / 2,
+          children: [
+            MediaTile(
+                songName: "Purple Haze",
+                artist: "Jimi Hendrix",
+                imageSrc: "lib/assets/test_images/hendrix.webp"),
+            MediaTile(
+                songName: "Purple Haze",
+                artist: "Jimi Hendrix",
+                imageSrc: "lib/assets/test_images/hendrix.webp"),
+            MediaTile(
+                songName: "Purple Haze",
+                artist: "Jimi Hendrix",
+                imageSrc: "lib/assets/test_images/hendrix.webp"),
+          ],
+        ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () async {
+            await showDialog<void>(
+                context: context,
+                builder: (context) {
+                  return PopupDialog();
+                });
+          },
+          child: Icon(Icons.add),
+          backgroundColor: Colors.purpleAccent[0],
+        ));
+  }
+}
 
+class PopupDialog extends StatefulWidget {
+  @override
+  _PopupDialogState createState() => _PopupDialogState();
+}
+
+class _PopupDialogState extends State<PopupDialog> {
   Uint8List? _image;
+  final _formKey = GlobalKey<FormState>();
 
   void selectImage() async {
     Uint8List img = await pickImage(ImageSource.gallery);
     setState(() {
       _image = img;
     });
-    setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
-    //remove debug flag
-    return Scaffold(
-      backgroundColor: Colors.deepPurple[700],
-      appBar: AppBar(
-        title: Text('History'),
-        backgroundColor: Colors.deepPurple[900],
-        titleTextStyle: TextStyle(
-          fontSize: 24,
-          fontWeight: FontWeight.bold,
-          color: Colors.white,
-        ),
-        elevation: 0,
-      ),
-      body: GridView.count(
-        crossAxisCount: 1,
-        childAspectRatio: 8/2,
-        children: [
-          MediaTile(
-            songName: "Purple Haze",
-            artist: "Jimi Hendrix",
-            imageSrc: "lib/assets/test_images/hendrix.webp"),
-            MediaTile(
-            songName: "Purple Haze",
-            artist: "Jimi Hendrix",
-            imageSrc: "lib/assets/test_images/hendrix.webp"),
-            MediaTile(
-            songName: "Purple Haze",
-            artist: "Jimi Hendrix",
-            imageSrc: "lib/assets/test_images/hendrix.webp"),
+    return AlertDialog(
+      content: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              child: Form(
+                  key: _formKey,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      TextFormField(
+                        decoration: InputDecoration(
+                          icon: Icon(Icons.music_note),
+                          labelText: 'Song Title *',
+                        ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter song title';
+                          }
+                          return null;
+                        },
+                      ),
+                      TextFormField(
+                        decoration: InputDecoration(
+                          icon: Icon(Icons.person),
+                          labelText: 'Artist Name *',
+                        ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter artist name';
+                          }
+                          return null;
+                        },
+                      ),
+                      Stack(children: [
+                        Padding(
+                          padding: const EdgeInsets.all(10),
+                          child: _image != null
+                              ? ClipRRect(
+                                  borderRadius: BorderRadius.circular(7),
+                                  child: GestureDetector(
+                                    onTap: selectImage,
+                                    child: Image(
+                                      height: 150,
+                                      fit: BoxFit.contain,
+                                      image: MemoryImage(_image!),
+                                      
+                                    ),
+                                  ))
+                              : ClipRRect(
+                                  borderRadius: BorderRadius.circular(7),
+                                  child: GestureDetector(
+                                    onTap: selectImage,
+                                    child: Image(
+                                      height: 150,
+                                      fit: BoxFit.contain,
+                                      image: NetworkImage(
+                                          'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS1BhBgvAdx2cQwiyvb-89VbGVzgQbB983tfw&s'),
+                                    ),
+                                  ),
+                                ),
+                        ),
+                      ])
+                    ],
+                  )),
+            ),
           ],
         ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-              await showDialog<void>(
-                context: context,
-                builder: (context){
-                  return AlertDialog(
-                    content: Container(
-                      height: 300,
-                      child: Form(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            TextFormField(
-                              decoration: InputDecoration(
-                                icon: Icon(Icons.music_note),
-                                labelText: 'Song Title',
-                              ),
-                            ),
-                            TextFormField(
-                              decoration: InputDecoration(
-                                icon: Icon(Icons.person),
-                                labelText: 'Artist Name',
-                              ),
-                            ),
-                            Stack(
-                              children: [
-                                Padding(
-                                padding: const EdgeInsets.all(10),
-                                child: 
-                                _image != null ?
-                                  Image(image: MemoryImage(_image!),)
-                                :
-                                  const Image(
-                                    height: 150,
-                                    fit: BoxFit.contain,
-                                    image: NetworkImage('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS1BhBgvAdx2cQwiyvb-89VbGVzgQbB983tfw&s'),
-                                  ),
-                              ),
-                              Positioned(
-                                child: IconButton(
-                                  onPressed: selectImage, icon: Icon(Icons.add_a_photo),
-                                  ),
-                                  bottom: -15,
-                                  left: 135,
-                                )
-                              ]
-                            )
-                        ],
-                        )
-                        ),
-                    ),
-                      actions: [
-                        TextButton(onPressed: (){
-                          _image = null;
-                          Navigator.of(context).pop();
-                          },
-                          child: Text("Okay"))
-                      ],
-                  );
-                }
-              );
-        },
-        child: Icon(Icons.add),
-        backgroundColor: Colors.purpleAccent[0],
-      )
+      ),
+      actions: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text("Cancel")),
+            TextButton(
+                onPressed: () {
+                  if (_formKey.currentState!.validate()) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Processing Data')),
+                    );
+                    Navigator.of(context).pop();
+                  }
+                },
+                child: Text("Done"))
+          ],
+        ),
+      ],
     );
   }
 }
