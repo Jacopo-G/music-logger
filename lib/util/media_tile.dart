@@ -1,17 +1,19 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
 class MediaTile extends StatelessWidget {
   final String songName;
   final String artist;
-  final String imageSrc;
+  final Uint8List? imageSrc;
 
 
   MediaTile({
     super.key,
     required this.songName,
     required this.artist,
-    required this.imageSrc,
+    this.imageSrc,
   });
 
   @override
@@ -19,7 +21,6 @@ class MediaTile extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
       child: Container(
-        height: 200,
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius:BorderRadius.circular(7)
@@ -33,10 +34,16 @@ class MediaTile extends StatelessWidget {
               padding: const EdgeInsets.all(5.0),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(7),
-                child: Image.asset(
-                  'assets/test_images/hendrix.webp',
-                  fit: BoxFit.contain,
-                  ),
+                child: imageSrc != null
+                    ? Image.memory(
+                        imageSrc!,
+                        fit: BoxFit.cover,
+                      )
+                    : Image.network(
+                        'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS1BhBgvAdx2cQwiyvb-89VbGVzgQbB983tfw&s',
+                        fit: BoxFit.cover,
+                      ),
+
               ),
             ),
             Column(

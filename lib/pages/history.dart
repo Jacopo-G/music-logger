@@ -5,6 +5,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:music_logger/util/media_tile.dart';
 import 'package:music_logger/util/utils.dart';
 
+List<MediaTile> mediaList = [];
+
 class History extends StatefulWidget {
   const History({super.key});
 
@@ -29,21 +31,8 @@ class _HistoryState extends State<History> {
         ),
         body: GridView.count(
           crossAxisCount: 1,
-          childAspectRatio: 8 / 2,
-          children: [
-            MediaTile(
-                songName: "Purple Haze",
-                artist: "Jimi Hendrix",
-                imageSrc: "lib/assets/test_images/hendrix.webp"),
-            MediaTile(
-                songName: "Purple Haze",
-                artist: "Jimi Hendrix",
-                imageSrc: "lib/assets/test_images/hendrix.webp"),
-            MediaTile(
-                songName: "Purple Haze",
-                artist: "Jimi Hendrix",
-                imageSrc: "lib/assets/test_images/hendrix.webp"),
-          ],
+          childAspectRatio: 10 / 2,
+          children: mediaList,
         ),
         floatingActionButton: FloatingActionButton(
           onPressed: () async {
@@ -67,6 +56,8 @@ class PopupDialog extends StatefulWidget {
 class _PopupDialogState extends State<PopupDialog> {
   Uint8List? _image;
   final _formKey = GlobalKey<FormState>();
+  TextEditingController songTitleEditingController = TextEditingController();
+  TextEditingController artistNameEditingController = TextEditingController();
 
   void selectImage() async {
     Uint8List img = await pickImage(ImageSource.gallery);
@@ -89,6 +80,7 @@ class _PopupDialogState extends State<PopupDialog> {
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       TextFormField(
+                        controller: songTitleEditingController,
                         decoration: InputDecoration(
                           icon: Icon(Icons.music_note),
                           labelText: 'Song Title *',
@@ -101,6 +93,8 @@ class _PopupDialogState extends State<PopupDialog> {
                         },
                       ),
                       TextFormField(
+                        controller: artistNameEditingController,
+
                         decoration: InputDecoration(
                           icon: Icon(Icons.person),
                           labelText: 'Artist Name *',
@@ -159,10 +153,11 @@ class _PopupDialogState extends State<PopupDialog> {
             TextButton(
                 onPressed: () {
                   if (_formKey.currentState!.validate()) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Processing Data')),
-                    );
-                    Navigator.of(context).pop();
+                    setState(() {
+                    mediaList.add(MediaTile(songName: songTitleEditingController.text, artist: artistNameEditingController.text, imageSrc: _image));
+                    Navigator.of(context).pop();  
+                    });
+                    
                   }
                 },
                 child: Text("Done"))
