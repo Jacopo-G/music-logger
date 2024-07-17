@@ -24,15 +24,31 @@ class _HistoryState extends State<History> {
         ),
         elevation: 0,
       ),
-      body: ListView(
+      body: GridView.count(
+        crossAxisCount: 1,
+        childAspectRatio: 8/2,
         children: [
-          MediaTile(),
-          MediaTile()
+          MediaTile(
+            songName: "Purple Haze",
+            artist: "Jimi Hendrix",
+            imageSrc: "lib/assets/test_images/hendrix.webp"),
+            MediaTile(
+            songName: "Purple Haze",
+            artist: "Jimi Hendrix",
+            imageSrc: "lib/assets/test_images/hendrix.webp"),
+            MediaTile(
+            songName: "Purple Haze",
+            artist: "Jimi Hendrix",
+            imageSrc: "lib/assets/test_images/hendrix.webp"),
           ],
         ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.pop(context);
+        //TODO Add Popup for adding song
+        onPressed: () async {
+              await showDialog<void>(
+                context: context,
+                builder: 
+              )
         },
         child: Icon(Icons.add),
         backgroundColor: Colors.purpleAccent[0],

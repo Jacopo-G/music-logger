@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:music_logger/pages/history.dart';
-import 'package:music_logger/util/media_tile.dart';
 
 void main() {
   runApp(musicLogger());
