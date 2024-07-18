@@ -1,9 +1,13 @@
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:music_logger/data/database.dart';
 import 'package:music_logger/util/media_tile.dart';
 import 'package:music_logger/util/utils.dart';
+
+MusicHistoryDatabase db = MusicHistoryDatabase();
 
 class History extends StatefulWidget {
   const History({super.key});
@@ -13,12 +17,22 @@ class History extends StatefulWidget {
 }
 
 class _HistoryState extends State<History> {
-  List<MediaTile> mediaList = [];
+  final _dataBox = Hive.box('storage');
 
   void addMediaTile(MediaTile tile) {
     setState(() {
-      mediaList.add(tile);
+      db.mediaList.add(tile);
     });
+  }
+
+  @override
+  void initState() {
+    
+    if (_dataBox.get("MEDIAHISTORYLIST") != null) {
+      db.loadData();
+    }
+
+    super.initState();
   }
 
   @override
@@ -35,7 +49,7 @@ class _HistoryState extends State<History> {
         ),
         elevation: 0,
       ),
-      body: mediaList.isEmpty
+      body: db.mediaList.isEmpty
           ? Center(
               child:
                   Text('No items yet', style: TextStyle(color: Colors.white)))
@@ -44,8 +58,8 @@ class _HistoryState extends State<History> {
                 crossAxisCount: 1,
                 childAspectRatio: 10 / 2,
               ),
-              itemCount: mediaList.length,
-              itemBuilder: (context, index) => mediaList.reversed.toList()[index],
+              itemCount: db.mediaList.length,
+              itemBuilder: (context, index) => db.mediaList.reversed.toList()[index],
             ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
@@ -137,6 +151,7 @@ class _PopupDialogState extends State<PopupDialog> {
                       : Icon(Icons.add_photo_alternate, size: 50),
                 ),
               ),
+              DatePickerDialog(firstDate: DateTime(2000), lastDate: DateTime(2099)),
             ],
           ),
         ),
@@ -157,6 +172,7 @@ class _PopupDialogState extends State<PopupDialog> {
                 imageSrc: _image,
               ));
               Navigator.of(context).pop();
+              db.updateData();
             }
           },
           child: Text("Done"),
